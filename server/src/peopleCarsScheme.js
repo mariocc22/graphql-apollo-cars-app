@@ -32,6 +32,8 @@ const typeDefs = `
 
   type Mutation {
     addPerson(id: String!, firstName: String!, lastName: String!): People
+    updatePerson(id: String!, firstName: String, lastName: String): People
+    removePerson(id: String!): People
   }
 `;
 
@@ -50,6 +52,24 @@ const resolvers = {
       };
       people.push(newPerson);
       return newPerson;
+    },
+    updatePerson: (root, args) => {
+      const person = people.find((person) => person.id === args.id);
+      if (!person) {
+        throw new Error(`Couldn't find person with id ${args.id}`);
+      }
+      person.firstName = args.firstName;
+      person.lastName = args.lastName;
+      return person;
+    },
+    removePerson: (root, args) => {
+      const personIndex = people.findIndex((person) => person.id === args.id);
+
+      if (personIndex === -1) {
+        throw new Error(`Couldn't find person with id ${args.id}`);
+      }
+      const removedPeople = people.splice(personIndex, 1);
+      return removedPeople[0];
     },
   },
 };
