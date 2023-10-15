@@ -15,18 +15,14 @@ const AddCar = () => {
   const [addCar] = useMutation(ADD_CAR);
 
   useEffect(() => {
-    forceUpdate({});
-    const addOptions = () => {
-      if (error) return;
-
-      let options = [];
-      if (!data) return;
-      data.people.map((person) => {
-        options.push({ value: person.id, label: person.firstName });
-      });
+    if (data && data.people) {
+      const options = data.people.map((person) => ({
+        value: person.id,
+        label: `${person.firstName} ${person.lastName}`,
+      }));
       setPeople(options);
-    };
-    addOptions();
+    }
+    forceUpdate({});
   }, [data]);
 
   const onFinish = (values) => {
@@ -112,10 +108,11 @@ const AddCar = () => {
               disabled={
                 !form.isFieldsTouched(true) ||
                 form.getFieldsError().filter(({ errors }) => errors.length)
-                  .length
+                  .length ||
+                !people.length
               }
             >
-              Add Person
+              Add Car
             </Button>
           )}
         </Form.Item>

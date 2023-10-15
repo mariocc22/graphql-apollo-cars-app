@@ -1,22 +1,35 @@
 /* eslint-disable react/prop-types */
-import { useMutation } from "@apollo/client";
-import { Button, Form, Input, InputNumber } from "antd";
+import { useMutation, useQuery } from "@apollo/client";
+import { Button, Form, Input, InputNumber, Select } from "antd";
 import { useEffect, useState } from "react";
-import { UPDATE_CAR } from "../../graphql/queries";
+import {
+  UPDATE_CAR,
+  GET_PEOPLE,
+  GET_CARS_BY_PERSON_ID,
+} from "../../graphql/queries";
 
-const UpdateCar = (props) => {
+const UpdateCar = ({ props, onButtonClick, personId }) => {
   const { id, make, model, price, year } = props;
+  const { error, data } = useQuery(GET_PEOPLE);
   const [form] = Form.useForm();
   const [, forceUpdate] = useState();
+  const [people, setPeople] = useState([]);
 
   useEffect(() => {
+    if (data && data.people) {
+      const options = data.people.map((person) => ({
+        value: person.id,
+        label: `${person.firstName} ${person.lastName}`,
+      }));
+      setPeople(options);
+    }
     forceUpdate({});
-  }, []);
+  }, [data]);
 
   const [updateCar] = useMutation(UPDATE_CAR);
 
   const onFinish = (values) => {
-    const { make, model, price, year } = values;
+    const { make, model, price, year, personId } = values;
 
     updateCar({
       variables: {
@@ -25,9 +38,24 @@ const UpdateCar = (props) => {
         model,
         price: parseFloat(price),
         year: parseInt(year),
+        personId: personId,
+      },
+      update: (cache, { data: { updateCar } }) => {
+        const data = cache.readQuery({
+          query: GET_CARS_BY_PERSON_ID,
+          variables: { personId },
+        });
+        if (!data) return;
+        cache.writeQuery({
+          query: GET_CARS_BY_PERSON_ID,
+          data: {
+            ...data,
+            cars: [...data.carsByPersonId, updateCar],
+          },
+        });
       },
     });
-    props.onButtonClick();
+    onButtonClick();
   };
 
   return (
@@ -38,10 +66,10 @@ const UpdateCar = (props) => {
       layout="inline"
       onFinish={onFinish}
       initialValues={{
+        year,
         make,
         model,
         price,
-        year,
       }}
     >
       <Form.Item
@@ -72,15 +100,24 @@ const UpdateCar = (props) => {
       >
         <InputNumber prefix="$" min={1} />
       </Form.Item>
-
+      <Form.Item
+        name="personId"
+        label="Person"
+        rules={[{ required: true, message: "Please select a person" }]}
+      >
+        <Select placeholder="Select a person" options={people} />
+      </Form.Item>
       <Form.Item shouldUpdate={true}>
         {() => (
           <Button
             type="primary"
             htmlType="submit"
             disabled={
-              (!form.isFieldTouched("firstName") &&
-                !form.isFieldTouched("lastName")) ||
+              (!form.isFieldTouched("year") &&
+                !form.isFieldTouched("make") &&
+                !form.isFieldTouched("price") &&
+                !form.isFieldTouched("model") &&
+                !form.isFieldTouched("personId")) ||
               form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >
@@ -88,7 +125,7 @@ const UpdateCar = (props) => {
           </Button>
         )}
       </Form.Item>
-      <Button onClick={props.onButtonClick}>Cancel</Button>
+      <Button onClick={onButtonClick}>Cancel</Button>
     </Form>
   );
 };

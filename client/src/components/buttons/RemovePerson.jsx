@@ -1,27 +1,27 @@
 /* eslint-disable react/prop-types */
 import { DeleteOutlined } from "@ant-design/icons";
 import { useMutation } from "@apollo/client";
-import { GET_CARS, REMOVE_CAR } from "../../graphql/queries";
+import { GET_PEOPLE, REMOVE_PERSON } from "../../graphql/queries";
 
 const RemovePerson = ({ id }) => {
-  const [removeCar] = useMutation(REMOVE_CAR, {
-    update(cache, { data: { removeCar } }) {
-      const { cars } = cache.readQuery({ query: GET_CARS });
-
+  const [removePerson] = useMutation(REMOVE_PERSON, {
+    update(cache, { data: { removePerson } }) {
+      const { people } = cache.readQuery({ query: GET_PEOPLE });
+      if (people === null) return;
       cache.writeQuery({
-        query: GET_CARS,
+        query: GET_PEOPLE,
         data: {
-          cars: cars.filter((car) => car.id !== removeCar.id),
+          people: people.filter((person) => person.id !== removePerson.id),
         },
       });
     },
   });
 
   const handleButtonClick = () => {
-    let result = window.confirm("Are you sure you want to delete this car?");
+    let result = window.confirm("Are you sure you want to delete this person?");
 
     if (result) {
-      removeCar({
+      removePerson({
         variables: {
           id,
         },

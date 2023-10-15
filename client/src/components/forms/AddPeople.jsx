@@ -41,7 +41,7 @@ const AddPeople = () => {
   };
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <Divider orientation="center" style={{ fontSize: 28 }}>
         Add Person
       </Divider>
@@ -49,8 +49,8 @@ const AddPeople = () => {
         name="add-people-form"
         layout="inline"
         size="large"
-        style={{ marginTop: "30px", marginBottom: "40px" }}
         form={form}
+        className="carForm"
         onFinish={onFinish}
       >
         <Form.Item

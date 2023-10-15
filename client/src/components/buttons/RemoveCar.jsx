@@ -6,14 +6,16 @@ import { GET_CARS, REMOVE_CAR } from "../../graphql/queries";
 const RemoveCar = ({ id }) => {
   const [removeCar] = useMutation(REMOVE_CAR, {
     update(cache, { data: { removeCar } }) {
-      const { cars } = cache.readQuery({ query: GET_CARS });
+      const data = cache.readQuery({ query: GET_CARS });
 
-      cache.writeQuery({
-        query: GET_CARS,
-        data: {
-          cars: cars.filter((car) => car.id !== removeCar.id),
-        },
-      });
+      if (data && data.cars) {
+        cache.writeQuery({
+          query: GET_CARS,
+          data: {
+            cars: data.cars.filter((car) => car.id !== removeCar.id),
+          },
+        });
+      }
     },
   });
 
