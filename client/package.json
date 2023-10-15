@@ -10,8 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.5",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.13",
+    "antd": "^5.10.0",
+    "graphql": "^16.8.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

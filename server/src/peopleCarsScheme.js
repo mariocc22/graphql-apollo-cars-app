@@ -1,3 +1,5 @@
+import * as ld from "lodash";
+
 //  1. define the schema
 const people = [
   {
@@ -16,64 +18,6 @@ const people = [
     lastName: "Torvalds",
   },
 ];
-
-// 2. define the type definitions for the schema
-const typeDefs = `
-  type People {
-    id: String!
-    firstName: String
-    lastName: String
-  }
-
-  type Query {
-    people: [People]
-    person(id: String!): People
-  }
-
-  type Mutation {
-    addPerson(id: String!, firstName: String!, lastName: String!): People
-    updatePerson(id: String!, firstName: String, lastName: String): People
-    removePerson(id: String!): People
-  }
-`;
-
-// 3. define the resolvers for the schema fields (Query) defined in step 2 above (typeDefs) and the data defined in step 1 above (people)
-const resolvers = {
-  Query: {
-    people: () => people,
-    person: (root, { id }) => people.find((person) => person.id === id),
-  },
-  Mutation: {
-    addPerson: (root, args) => {
-      const newPerson = {
-        id: args.id,
-        firstName: args.firstName,
-        lastName: args.lastName,
-      };
-      people.push(newPerson);
-      return newPerson;
-    },
-    updatePerson: (root, args) => {
-      const person = people.find((person) => person.id === args.id);
-      if (!person) {
-        throw new Error(`Couldn't find person with id ${args.id}`);
-      }
-      person.firstName = args.firstName;
-      person.lastName = args.lastName;
-      return person;
-    },
-    removePerson: (root, args) => {
-      const personIndex = people.findIndex((person) => person.id === args.id);
-
-      if (personIndex === -1) {
-        throw new Error(`Couldn't find person with id ${args.id}`);
-      }
-      const removedPeople = people.splice(personIndex, 1);
-      return removedPeople[0];
-    },
-  },
-};
-/////////////////////////////////////////////////////////////////////////////////////////////
 
 const cars = [
   {
@@ -149,5 +93,131 @@ const cars = [
     personId: "3",
   },
 ];
+
+// 2. define the type definitions for the schema
+const typeDefs = `
+  type People {
+    id: String!
+    firstName: String
+    lastName: String
+  }
+
+  type Car {
+    id: String!,
+    year: Int,
+    make: String,
+    model: String,
+    price: Float,
+    personId: String
+  }
+
+  type Query {
+    people: [People]
+    person(id: String!): People
+    cars: [Car]
+    car(id: String!): Car
+    carsByPersonId(personId: String!): [Car]
+  }
+
+  type Mutation {
+    addPerson(id: String!, firstName: String!, lastName: String!): People
+    updatePerson(id: String!, firstName: String, lastName: String): People
+    removePerson(id: String!): People
+
+    addCar(id: String!, year: Int!, make: String!, model: String!, price: Float!, personId: String!): Car
+    updateCar(id: String!, year: Int!, make: String!, model: String!, price: Float!, personId: String!): Car
+    removeCar(id: String!): Car
+    removeCarsByPersonId(personId: String!): [Car]
+  }
+`;
+
+// 3. define the resolvers for the schema fields (Query) defined in step 2 above (typeDefs) and the data defined in step 1 above (people)
+const resolvers = {
+  Query: {
+    people: () => people,
+    person: (root, { id }) => people.find((person) => person.id === id),
+    cars: () => cars,
+    car: (root, { id }) => cars.find((car) => car.id === id),
+    carsByPersonId: (root, { personId }) =>
+      cars.filter((car) => car.personId === personId),
+  },
+  Mutation: {
+    addPerson: (root, args) => {
+      const newPerson = {
+        id: args.id,
+        firstName: args.firstName,
+        lastName: args.lastName,
+      };
+
+      people.push(newPerson);
+      return newPerson;
+    },
+    updatePerson: (root, args) => {
+      const person = people.find((person) => person.id === args.id);
+      if (!person) {
+        throw new Error(`Couldn't find person with id ${args.id}`);
+      }
+      person.firstName = args.firstName;
+      person.lastName = args.lastName;
+      return person;
+    },
+    removePerson: (root, args) => {
+      const personIndex = people.findIndex((person) => person.id === args.id);
+
+      if (personIndex === -1) {
+        throw new Error(`Couldn't find person with id ${args.id}`);
+      }
+      const removedPeople = people.splice(personIndex, 1);
+      return removedPeople[0];
+    },
+    addCar: (root, args) => {
+      const newCar = {
+        id: args.id,
+        year: args.year,
+        make: args.make,
+        model: args.model,
+        price: args.price,
+        personId: args.personId,
+      };
+      cars.push(newCar);
+      return newCar;
+    },
+    updateCar: (root, args) => {
+      const car = cars.find((car) => car.id === args.id);
+      if (!car) {
+        throw new Error(`Couldn't find car with ID ${args.id}`);
+      }
+      car.year = args.year;
+      car.make = args.make;
+      car.model = args.model;
+      car.price = args.price;
+      car.personId = args.personId;
+      return car;
+    },
+    removeCar: (root, args) => {
+      const carIndex = cars.findIndex((car) => car.id === args.id);
+
+      if (carIndex === -1) {
+        throw new Error(`Couldn't find car with ID ${args.id}`);
+      }
+      const removedCars = cars.splice(carIndex, 1);
+      return removedCars[0];
+    },
+    removeCarsByPersonId: (root, args) => {
+      const removedCars = ld.filter(
+        cars,
+        (car) => car.personId === args.personId
+      );
+
+      if (removedCars.length === 0) {
+        throw new Error(`Couldn't find car with Owner ID ${args.personId}`);
+      }
+
+      ld.remove(cars, (car) => car.personId === args.personId);
+
+      return removedCars;
+    },
+  },
+};
 
 export { typeDefs, resolvers };
