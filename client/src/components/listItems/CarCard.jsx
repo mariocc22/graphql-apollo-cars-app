@@ -6,9 +6,12 @@ import { useState } from "react";
 import UpdateCar from "../forms/UpdateCar";
 import RemoveCar from "../buttons/RemoveCar";
 import { formatNumber } from "../../utils/helpers";
+import { useParams } from "react-router-dom";
+import RemoveCarPersonId from "../buttons/RemoveCarPersonId";
 
 const CarCard = ({ props, personId }) => {
   const { id, make, model, year, price } = props;
+  const { ownerId } = useParams();
   const styles = getStyles();
   const [editMode, setEditMode] = useState(false);
 
@@ -33,7 +36,11 @@ const CarCard = ({ props, personId }) => {
           title={`${year} ${make} ${model} >> $  ${formatNumber(price)}`}
           actions={[
             <EditOutlined key="edit" onClick={handleButtonClick} />,
-            <RemoveCar id={id} />,
+            ownerId ? (
+              <RemoveCarPersonId id={id} ownerId={ownerId} />
+            ) : (
+              <RemoveCar id={id} />
+            ),
           ]}
         ></Card>
       )}

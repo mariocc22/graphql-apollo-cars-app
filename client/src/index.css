@@ -31,6 +31,18 @@ body {
   max-width: 1400px;
 }
 
+.People {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 3px solid black;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 0 2rem;
+  max-width: 1400px;
+  width: 100%;
+}
+
 h1 {
   font-size: 2.5em;
   line-height: 1.1;

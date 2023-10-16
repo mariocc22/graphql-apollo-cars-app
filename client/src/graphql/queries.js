@@ -168,3 +168,21 @@ export const GET_CARS_BY_PERSON_ID = gql`
     }
   }
 `;
+
+export const GET_PERSON_WITH_THEIR_CARS = gql`
+  query Query($personWithTheirCarsId: String!) {
+    personWithTheirCars(id: $personWithTheirCarsId) {
+      firstName
+      id
+      lastName
+      cars {
+        id
+        make
+        model
+        personId
+        price
+        year
+      }
+    }
+  }
+`;

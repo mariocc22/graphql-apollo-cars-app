@@ -5,6 +5,8 @@ import { EditOutlined } from "@ant-design/icons";
 import RemovePerson from "../buttons/RemovePerson";
 import { useState } from "react";
 
+import { Link } from "react-router-dom";
+
 import SubListCars from "./SubListCars";
 import UpdatePerson from "../forms/UpdatePerson";
 
@@ -12,7 +14,7 @@ const PeopleLists = () => {
   const { loading, error, data } = useQuery(GET_PEOPLE);
   const [editMode, setEditMode] = useState(false);
   const [editingPersonId, setEditingPersonId] = useState(null);
-  const { Link } = Typography;
+  const { Text } = Typography;
 
   const handleButtonClick = (id) => {
     setEditMode(!editMode);
@@ -48,15 +50,17 @@ const PeopleLists = () => {
                 ]}
               >
                 <SubListCars props={item} />
-                <Link
-                  style={{
-                    margin: "1rem 0",
-                    fontSize: "1rem",
-                  }}
-                  href="https://google.com"
-                  target="_parent"
-                >
-                  Learn More
+                <Link to={`people/${item.id}`}>
+                  <Text
+                    style={{
+                      color: "blue",
+                      opacity: "0.65",
+                      margin: "1rem 0",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Learn More
+                  </Text>
                 </Link>
               </Card>
             )}

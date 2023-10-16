@@ -100,6 +100,7 @@ const typeDefs = `
     id: String!
     firstName: String
     lastName: String
+    cars: [Car]
   }
 
   type Car {
@@ -117,6 +118,8 @@ const typeDefs = `
     cars: [Car]
     car(id: String!): Car
     carsByPersonId(personId: String!): [Car]
+    personWithTheirCars(id: String!): People
+
   }
 
   type Mutation {
@@ -140,6 +143,14 @@ const resolvers = {
     car: (root, { id }) => cars.find((car) => car.id === id),
     carsByPersonId: (root, { personId }) =>
       cars.filter((car) => car.personId === personId),
+    personWithTheirCars: (root, { id }) => {
+      const person = people.find((person) => person.id === id);
+      if (!person) {
+        throw new Error(`Couldn't find person with id ${id}`);
+      }
+      const carsOfPerson = cars.filter((car) => car.personId === id);
+      return { ...person, cars: carsOfPerson };
+    },
   },
   Mutation: {
     addPerson: (root, args) => {
