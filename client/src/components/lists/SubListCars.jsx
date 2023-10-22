@@ -1,14 +1,12 @@
 /* eslint-disable react/prop-types */
 import { Card, List } from "antd";
 import { useQuery } from "@apollo/client";
-import { GET_CARS_BY_PERSON_ID, GET_CARS } from "../../graphql/queries";
+import { GET_CARS } from "../../graphql/queries";
 import CarCard from "../listItems/CarCard";
 
 const SubListCars = ({ props }) => {
-  const { id, firstName, lastName } = props;
+  const { id } = props;
   const { loading, error, data } = useQuery(GET_CARS);
-
-  console.log("data", data);
 
   return (
     <List

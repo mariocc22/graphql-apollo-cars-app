@@ -45,7 +45,7 @@ const getStyles = () => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "row",
+    flexDirection: "column-reverse",
     margin: "1rem",
     gap: "1rem",
   },
